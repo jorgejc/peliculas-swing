@@ -1,7 +1,9 @@
 com\iudigital\peliculas\view\MovieMain$1.class
+com\iudigital\peliculas\dao\GenreDao.class
 com\iudigital\peliculas\dao\MovieDao.class
 com\iudigital\peliculas\view\Peliculas.class
 com\iudigital\peliculas\view\MovieMain.class
 com\iudigital\peliculas\config\ConnectionConfig.class
 com\iudigital\peliculas\controller\MovieController.class
+com\iudigital\peliculas\domain\Genre.class
 com\iudigital\peliculas\domain\Movie.class

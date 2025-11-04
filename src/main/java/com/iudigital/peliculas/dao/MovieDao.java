@@ -72,4 +72,44 @@ public class MovieDao {
             }
         } 
     }
+    
+    public void create(Movie movie) throws SQLException {
+        
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        
+        try {
+            
+            connection = ConnectionConfig.getConnection();
+            preparedStatement = connection.prepareCall(CREATE_MOVIE);
+            preparedStatement.setString(1, movie.getTitulo());
+            preparedStatement.setString(2, movie.getAnio());
+            preparedStatement.setString(3, movie.getActor());
+            preparedStatement.setString(4, movie.getGenero());
+            preparedStatement.setObject(5, LocalDateTime.now());
+            preparedStatement.executeUpdate();
+            
+        } finally {
+            
+            if (connection != null) {
+                connection.close();
+            }
+            
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        }
+    }
+    
+    public Movie getMovie(int id) throws SQLException {
+  
+    }
+    
+    public void updateMovie(int id, Movie movie) throws SQLException {
+        
+    }
+    
+    public void delete(int id) throws SQLException {
+        
+    }
 }

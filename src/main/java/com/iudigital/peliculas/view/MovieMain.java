@@ -1,13 +1,72 @@
 
 package com.iudigital.peliculas.view;
 
+import com.iudigital.peliculas.controller.GenreController;
+import com.iudigital.peliculas.controller.MovieController;
+import com.iudigital.peliculas.domain.Genre;
+import com.iudigital.peliculas.domain.Movie;
+import java.sql.SQLException;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 public class MovieMain extends javax.swing.JFrame {
 
+    private final MovieController movieController;
+    private final GenreController genreController;
+    private static final String[] COLUMNS = { "ID", "TITULO", "AÑO", "ACTOR", 
+        "ID GENERO", "GENERO", "FECHA CREACIÓN"};
+    private static final String GENEROS = "-- GENEROS --";
+    private static final String SELECCIONE = "-- SELECCIONE --";
+    
+    
     /**
      * Creates new form MovieMain
      */
     public MovieMain() {
         initComponents();
+        movieController = new MovieController();
+        genreController = new GenreController();
+        listMovies();
+    }
+    
+    public void listMovies() {
+        cbxMovies.removeAllItems();
+        Movie movie1 = new Movie();
+        movie1.setTitulo(SELECCIONE);
+        cbxMovies.addItem(movie1);
+        tblMovies.removeAll();
+        
+        DefaultTableModel defaultTableModel = new DefaultTableModel();
+        for (String COLUMN : COLUMNS){
+            defaultTableModel.addColumn(COLUMN);
+        }
+        
+        tblMovies.setModel(defaultTableModel);
+        
+        try {
+            List<Movie> movies = movieController.getMovies();
+            if (movies.isEmpty()) {
+                return;
+            }
+            
+            defaultTableModel.setRowCount(movies.size());
+            int row = 0;
+            for (Movie movie : movies) {
+               defaultTableModel.setValueAt(movie.getId(), row, 0);
+               defaultTableModel.setValueAt(movie.getTitulo(), row, 1);
+               defaultTableModel.setValueAt(movie.getAnio(), row, 2);
+               defaultTableModel.setValueAt(movie.getActor(), row, 3);
+               defaultTableModel.setValueAt(movie.getGenero(), row, 4);
+               defaultTableModel.setValueAt(movie.getNombreGenero(), row, 5);
+               defaultTableModel.setValueAt(movie.getFechaCreacion(), row, 6);
+               row++;
+               
+               cbxMovies.addItem(movie);
+
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -20,6 +79,38 @@ public class MovieMain extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        jPestanaPanel = new javax.swing.JTabbedPane();
+        jPSave = new javax.swing.JPanel();
+        jPOptions = new javax.swing.JPanel();
+        lblTitle = new javax.swing.JLabel();
+        lblYear = new javax.swing.JLabel();
+        lblActor = new javax.swing.JLabel();
+        lblGenre = new javax.swing.JLabel();
+        txtTitle = new javax.swing.JTextField();
+        txtYear = new javax.swing.JTextField();
+        txtActor = new javax.swing.JTextField();
+        cbxGenres = new javax.swing.JComboBox<>();
+        btnSave = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblMovies = new javax.swing.JTable();
+        jPUpdate = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        cbxMovies = new javax.swing.JComboBox<>();
+        lblId = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
+        lblTitleEdit = new javax.swing.JLabel();
+        txtTitleEdit = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txtYearEdit = new javax.swing.JTextField();
+        lblActorEdit = new javax.swing.JLabel();
+        txtActorEdit = new javax.swing.JTextField();
+        lblGeneroId = new javax.swing.JLabel();
+        txtGeneroId = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtGeneroEdit = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -27,8 +118,145 @@ public class MovieMain extends javax.swing.JFrame {
         jLabel1.setText("Movies App");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, -1, 20));
 
+        jPSave.setLayout(null);
+
+        jPOptions.setBorder(javax.swing.BorderFactory.createTitledBorder("Llenar los siguientes campos"));
+        jPOptions.setLayout(null);
+
+        lblTitle.setText("TITULO");
+        jPOptions.add(lblTitle);
+        lblTitle.setBounds(110, 60, 40, 16);
+
+        lblYear.setText("AÑO");
+        jPOptions.add(lblYear);
+        lblYear.setBounds(280, 60, 26, 16);
+
+        lblActor.setText("ACTOR");
+        jPOptions.add(lblActor);
+        lblActor.setBounds(380, 60, 60, 16);
+
+        lblGenre.setText("GÉNEROS");
+        jPOptions.add(lblGenre);
+        lblGenre.setBounds(530, 60, 70, 16);
+        jPOptions.add(txtTitle);
+        txtTitle.setBounds(21, 90, 220, 22);
+        jPOptions.add(txtYear);
+        txtYear.setBounds(260, 90, 64, 22);
+        jPOptions.add(txtActor);
+        txtActor.setBounds(350, 90, 120, 22);
+
+        jPOptions.add(cbxGenres);
+        cbxGenres.setBounds(492, 90, 150, 22);
+
+        btnSave.setText("GUARDAR");
+        jPOptions.add(btnSave);
+        btnSave.setBounds(290, 160, 100, 22);
+
+        jPSave.add(jPOptions);
+        jPOptions.setBounds(0, 5, 660, 220);
+
+        tblMovies.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        tblMovies.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        tblMovies.setSurrendersFocusOnKeystroke(true);
+        jScrollPane1.setViewportView(tblMovies);
+
+        jPSave.add(jScrollPane1);
+        jScrollPane1.setBounds(0, 230, 660, 220);
+
+        jPestanaPanel.addTab("CREAR", jPSave);
+
+        jPUpdate.setLayout(null);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Actualiza los siguientes datos"));
+        jPanel1.setLayout(null);
+
+        jLabel2.setText("MOVIES");
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(130, 60, 60, 16);
+
+        jPanel1.add(cbxMovies);
+        cbxMovies.setBounds(20, 90, 280, 22);
+
+        lblId.setText("ID");
+        jPanel1.add(lblId);
+        lblId.setBounds(30, 170, 11, 16);
+
+        txtId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtIdActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txtId);
+        txtId.setBounds(90, 170, 71, 22);
+
+        lblTitleEdit.setText("TITULO");
+        jPanel1.add(lblTitleEdit);
+        lblTitleEdit.setBounds(190, 170, 40, 16);
+        jPanel1.add(txtTitleEdit);
+        txtTitleEdit.setBounds(250, 170, 190, 22);
+
+        jLabel4.setText("AÑO");
+        jPanel1.add(jLabel4);
+        jLabel4.setBounds(20, 230, 26, 16);
+
+        txtYearEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtYearEditActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txtYearEdit);
+        txtYearEdit.setBounds(90, 230, 64, 22);
+
+        lblActorEdit.setText("ACTOR");
+        jPanel1.add(lblActorEdit);
+        lblActorEdit.setBounds(190, 230, 50, 16);
+        jPanel1.add(txtActorEdit);
+        txtActorEdit.setBounds(250, 230, 190, 22);
+
+        lblGeneroId.setText("ID GENERO");
+        jPanel1.add(lblGeneroId);
+        lblGeneroId.setBounds(20, 290, 70, 16);
+        jPanel1.add(txtGeneroId);
+        txtGeneroId.setBounds(90, 290, 64, 22);
+
+        jLabel3.setText("GENERO");
+        jPanel1.add(jLabel3);
+        jLabel3.setBounds(190, 290, 60, 16);
+        jPanel1.add(txtGeneroEdit);
+        txtGeneroEdit.setBounds(250, 290, 190, 22);
+
+        jButton1.setText("ACTUALIZAR");
+        jPanel1.add(jButton1);
+        jButton1.setBounds(500, 190, 110, 22);
+
+        jButton2.setText("ELIMINAR");
+        jPanel1.add(jButton2);
+        jButton2.setBounds(520, 260, 83, 22);
+
+        jPUpdate.add(jPanel1);
+        jPanel1.setBounds(0, 5, 670, 450);
+
+        jPestanaPanel.addTab("ACTUALIZAR", jPUpdate);
+
+        getContentPane().add(jPestanaPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 670, 490));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIdActionPerformed
+
+    private void txtYearEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtYearEditActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtYearEditActionPerformed
 
     /**
      * @param args the command line arguments
@@ -41,7 +269,7 @@ public class MovieMain extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -66,6 +294,38 @@ public class MovieMain extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSave;
+    private javax.swing.JComboBox<Genre> cbxGenres;
+    private javax.swing.JComboBox<Movie> cbxMovies;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPOptions;
+    private javax.swing.JPanel jPSave;
+    private javax.swing.JPanel jPUpdate;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JTabbedPane jPestanaPanel;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblActor;
+    private javax.swing.JLabel lblActorEdit;
+    private javax.swing.JLabel lblGeneroId;
+    private javax.swing.JLabel lblGenre;
+    private javax.swing.JLabel lblId;
+    private javax.swing.JLabel lblTitle;
+    private javax.swing.JLabel lblTitleEdit;
+    private javax.swing.JLabel lblYear;
+    private javax.swing.JTable tblMovies;
+    private javax.swing.JTextField txtActor;
+    private javax.swing.JTextField txtActorEdit;
+    private javax.swing.JTextField txtGeneroEdit;
+    private javax.swing.JTextField txtGeneroId;
+    private javax.swing.JTextField txtId;
+    private javax.swing.JTextField txtTitle;
+    private javax.swing.JTextField txtTitleEdit;
+    private javax.swing.JTextField txtYear;
+    private javax.swing.JTextField txtYearEdit;
     // End of variables declaration//GEN-END:variables
 }

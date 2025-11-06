@@ -22,4 +22,17 @@ public class MovieController {
         movie.setFechaCreacion(LocalDateTime.now());
         movieDao.create(movie);
     }
+    
+    public Movie getMovie(int id) throws SQLException {
+        return movieDao.getMovie(id);
+    }
+    
+    public void updateMovie(int id, Movie movie) throws SQLException {
+        movie.setFechaCreacion(LocalDateTime.now());
+        movieDao.updateMovie(id, movie);
+    }
+    
+    public void delete(int id) throws SQLException {
+        movieDao.delete(id);
+    }
 }

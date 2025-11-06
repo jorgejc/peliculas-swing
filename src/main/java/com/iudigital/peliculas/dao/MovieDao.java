@@ -102,14 +102,100 @@ public class MovieDao {
     }
     
     public Movie getMovie(int id) throws SQLException {
-  
+       
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Movie movie = null;
+        
+        try {
+            
+         connection = ConnectionConfig.getConnection();
+         preparedStatement = connection.prepareStatement(GET_MOVIE_BY_ID);
+         preparedStatement.setInt(1, id);
+         resultSet = preparedStatement.executeQuery(); 
+         
+         if (resultSet.next()) {
+             
+             movie = new Movie();
+             movie.setId(resultSet.getInt("movie_id"));
+             movie.setTitulo(resultSet.getString("titulo"));
+             movie.setAnio(resultSet.getString("anio"));
+             movie.setActor(resultSet.getString("actor"));
+             movie.setGenero(resultSet.getString("genre_id"));
+             movie.setNombreGenero(resultSet.getString("genre.name"));
+             movie.setFechaCreacion(resultSet.getObject("fecha_creacion", LocalDateTime.class));
+         }
+         return movie;
+         
+        } finally {
+            
+            if (connection != null) {
+                connection.close();
+            }
+            
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
     }
     
     public void updateMovie(int id, Movie movie) throws SQLException {
         
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        
+        try {
+            
+            connection = ConnectionConfig.getConnection();
+            preparedStatement = connection.prepareCall(UPDATE_MOVIE);
+            preparedStatement.setString(1, movie.getTitulo());
+            preparedStatement.setString(2, movie.getAnio());
+            preparedStatement.setString(3, movie.getActor());
+            preparedStatement.setString(4, movie.getGenero());
+            preparedStatement.setObject(5, LocalDateTime.now());
+            preparedStatement.setInt(6, id);
+            preparedStatement.executeUpdate();
+            
+        } finally {
+            
+            if (connection != null) {
+                connection.close();
+            }
+            
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        }
+        
     }
     
     public void delete(int id) throws SQLException {
+        
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        
+        try {
+            
+            connection = ConnectionConfig.getConnection();
+            preparedStatement = connection.prepareCall(DELETE_MOVIE);
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+            
+        } finally {
+            
+            if (connection != null) {
+                connection.close();
+            }
+            
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        }
         
     }
 }

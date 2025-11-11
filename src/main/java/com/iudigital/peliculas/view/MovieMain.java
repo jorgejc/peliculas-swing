@@ -7,6 +7,7 @@ import com.iudigital.peliculas.domain.Genre;
 import com.iudigital.peliculas.domain.Movie;
 import java.sql.SQLException;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class MovieMain extends javax.swing.JFrame {
@@ -27,6 +28,8 @@ public class MovieMain extends javax.swing.JFrame {
         movieController = new MovieController();
         genreController = new GenreController();
         listMovies();
+        listGenres();
+        addListener();
     }
     
     public void listMovies() {
@@ -68,6 +71,48 @@ public class MovieMain extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }
+    
+    private void listGenres() {
+        cbxGenres.removeAllItems();
+        Genre genre1 = new Genre();
+        genre1.setNombre(GENEROS);
+        cbxGenres.addItem(genre1);
+        
+        try {
+            List<Genre> genres = genreController.getGenres();
+            for (Genre genre : genres) {
+                cbxGenres.addItem(genre);
+            }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+        }
+  
+    }
+    
+    private void addListener() {
+        cbxMovies.addItemListener(event -> {
+            Movie selectedMovie = (Movie) event.getItem();
+            if (selectedMovie.getTitulo().equals(SELECCIONE)) {
+                txtMovieId.setText("");
+                txtTitleEdit.setText("");
+                txtYearEdit.setText("");
+                txtActorEdit.setText("");
+                txtGeneroId.setText("");
+                txtGeneroEdit.setText("");
+                txtFechaCreacionEdit.setText("");
+
+            } else {
+                txtMovieId.setText(String.valueOf(selectedMovie.getId()));
+                txtTitleEdit.setText(selectedMovie.getTitulo());
+                txtYearEdit.setText(selectedMovie.getAnio());
+                txtActorEdit.setText(selectedMovie.getActor());
+                txtGeneroId.setText(selectedMovie.getGenero());
+                txtGeneroEdit.setText(selectedMovie.getNombreGenero());
+                txtFechaCreacionEdit.setText(String.valueOf(selectedMovie.getFechaCreacion()));
+            }
+            System.out.println("selectedMovie: " + selectedMovie);
+        });
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -98,7 +143,7 @@ public class MovieMain extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         cbxMovies = new javax.swing.JComboBox<>();
         lblId = new javax.swing.JLabel();
-        txtId = new javax.swing.JTextField();
+        txtMovieId = new javax.swing.JTextField();
         lblTitleEdit = new javax.swing.JLabel();
         txtTitleEdit = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -109,8 +154,10 @@ public class MovieMain extends javax.swing.JFrame {
         txtGeneroId = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtGeneroEdit = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        lblGeneroId1 = new javax.swing.JLabel();
+        txtFechaCreacionEdit = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -149,6 +196,11 @@ public class MovieMain extends javax.swing.JFrame {
         cbxGenres.setBounds(492, 90, 150, 22);
 
         btnSave.setText("GUARDAR");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
         jPOptions.add(btnSave);
         btnSave.setBounds(290, 160, 100, 22);
 
@@ -181,6 +233,11 @@ public class MovieMain extends javax.swing.JFrame {
         jPanel1.add(jLabel2);
         jLabel2.setBounds(130, 60, 60, 16);
 
+        cbxMovies.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxMoviesActionPerformed(evt);
+            }
+        });
         jPanel1.add(cbxMovies);
         cbxMovies.setBounds(20, 90, 280, 22);
 
@@ -188,13 +245,13 @@ public class MovieMain extends javax.swing.JFrame {
         jPanel1.add(lblId);
         lblId.setBounds(30, 170, 11, 16);
 
-        txtId.addActionListener(new java.awt.event.ActionListener() {
+        txtMovieId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtIdActionPerformed(evt);
+                txtMovieIdActionPerformed(evt);
             }
         });
-        jPanel1.add(txtId);
-        txtId.setBounds(90, 170, 71, 22);
+        jPanel1.add(txtMovieId);
+        txtMovieId.setBounds(90, 170, 71, 22);
 
         lblTitleEdit.setText("TITULO");
         jPanel1.add(lblTitleEdit);
@@ -220,9 +277,9 @@ public class MovieMain extends javax.swing.JFrame {
         jPanel1.add(txtActorEdit);
         txtActorEdit.setBounds(250, 230, 190, 22);
 
-        lblGeneroId.setText("ID GENERO");
+        lblGeneroId.setText("FECHA CREACION");
         jPanel1.add(lblGeneroId);
-        lblGeneroId.setBounds(20, 290, 70, 16);
+        lblGeneroId.setBounds(30, 350, 100, 16);
         jPanel1.add(txtGeneroId);
         txtGeneroId.setBounds(90, 290, 64, 22);
 
@@ -232,13 +289,30 @@ public class MovieMain extends javax.swing.JFrame {
         jPanel1.add(txtGeneroEdit);
         txtGeneroEdit.setBounds(250, 290, 190, 22);
 
-        jButton1.setText("ACTUALIZAR");
-        jPanel1.add(jButton1);
-        jButton1.setBounds(500, 190, 110, 22);
+        btnUpdate.setText("ACTUALIZAR");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnUpdate);
+        btnUpdate.setBounds(500, 190, 110, 22);
 
-        jButton2.setText("ELIMINAR");
-        jPanel1.add(jButton2);
-        jButton2.setBounds(520, 260, 83, 22);
+        btnDelete.setText("ELIMINAR");
+        jPanel1.add(btnDelete);
+        btnDelete.setBounds(520, 260, 83, 22);
+
+        lblGeneroId1.setText("ID GENERO");
+        jPanel1.add(lblGeneroId1);
+        lblGeneroId1.setBounds(20, 290, 70, 16);
+
+        txtFechaCreacionEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFechaCreacionEditActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txtFechaCreacionEdit);
+        txtFechaCreacionEdit.setBounds(150, 350, 280, 22);
 
         jPUpdate.add(jPanel1);
         jPanel1.setBounds(0, 5, 670, 450);
@@ -250,13 +324,131 @@ public class MovieMain extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdActionPerformed
+    private void txtMovieIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMovieIdActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdActionPerformed
+    }//GEN-LAST:event_txtMovieIdActionPerformed
 
     private void txtYearEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtYearEditActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtYearEditActionPerformed
+
+    private void cbxMoviesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxMoviesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxMoviesActionPerformed
+
+    private void txtFechaCreacionEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaCreacionEditActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFechaCreacionEditActionPerformed
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        
+        if (txtTitle.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Digite Título");
+            txtTitle.requestFocus();
+            return;
+        }
+        
+        if (txtYear.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Digite Año de estreno");
+            txtYear.requestFocus();
+            return;
+        }
+        
+        if (txtActor.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Digite nombre del actor principal");
+            txtActor.requestFocus();
+            return;
+        }
+        
+        Movie movie = new Movie();
+        movie.setTitulo(txtTitle.getText().trim());
+        movie.setAnio(txtYear.getText().trim());
+        movie.setActor(txtActor.getText().trim());
+        movie.setGenero(String.valueOf(cbxGenres.getSelectedIndex()+1));
+        movie.setNombreGenero(txtGeneroEdit.getText().trim());
+        
+        try {
+            movieController.create(movie);
+            txtTitle.setText("");
+            txtYear.setText("");
+            txtActor.setText("");
+            listMovies();
+            JOptionPane.showMessageDialog(null, "Película creada con exito");
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "La película no puedo ser creada");
+        }
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        // TODO add your handling code here:
+        
+        if (txtMovieId.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Seleccione una película de la lista");
+            return;
+        }
+        
+        if (txtTitleEdit.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Digite Título");
+            txtTitleEdit.requestFocus();
+            return;
+        }
+        
+        if (txtYearEdit.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Digite Año de estreno");
+            txtYearEdit.requestFocus();
+            return;
+        }
+        
+        if (txtActorEdit.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Digite nombre del actor principal");
+            txtActorEdit.requestFocus();
+            return;
+        }
+        
+        if (txtGeneroId.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Digite el id del género");
+            txtGeneroId.requestFocus();
+            return;
+        }
+        
+        if (txtGeneroEdit.getText().trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Digite el nombre del género");
+            txtGeneroEdit.requestFocus();
+            return;
+        }
+        
+        Movie movie = new Movie();
+        movie.setTitulo(txtTitleEdit.getText().trim());
+        movie.setAnio(txtYearEdit.getText().trim());
+        movie.setActor(txtActorEdit.getText().trim());
+        movie.setGenero(txtGeneroId.getText().trim());
+        movie.setNombreGenero(txtGeneroEdit.getText().trim());
+        
+        int opt = JOptionPane.showConfirmDialog(null, "Desea actualizar una película", "Confirmar salida", 
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        
+        if (opt == 0) {
+            
+            try {
+            movieController.updateMovie(Integer.parseInt(txtMovieId.getText()), movie);
+            txtMovieId.setText("");
+            txtTitleEdit.setText("");
+            txtYearEdit.setText("");
+            txtActorEdit.setText("");
+            txtGeneroId.setText("");
+            txtGeneroEdit.setText("");
+            txtFechaCreacionEdit.setText("");
+            listMovies();
+            JOptionPane.showMessageDialog(null, "Se ha actualizado la película con exito");
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "La película no pudo ser actualizada");
+        }
+            
+        }      
+        
+    }//GEN-LAST:event_btnUpdateActionPerformed
 
     /**
      * @param args the command line arguments
@@ -294,11 +486,11 @@ public class MovieMain extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox<Genre> cbxGenres;
     private javax.swing.JComboBox<Movie> cbxMovies;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -312,6 +504,7 @@ public class MovieMain extends javax.swing.JFrame {
     private javax.swing.JLabel lblActor;
     private javax.swing.JLabel lblActorEdit;
     private javax.swing.JLabel lblGeneroId;
+    private javax.swing.JLabel lblGeneroId1;
     private javax.swing.JLabel lblGenre;
     private javax.swing.JLabel lblId;
     private javax.swing.JLabel lblTitle;
@@ -320,9 +513,10 @@ public class MovieMain extends javax.swing.JFrame {
     private javax.swing.JTable tblMovies;
     private javax.swing.JTextField txtActor;
     private javax.swing.JTextField txtActorEdit;
+    private javax.swing.JTextField txtFechaCreacionEdit;
     private javax.swing.JTextField txtGeneroEdit;
     private javax.swing.JTextField txtGeneroId;
-    private javax.swing.JTextField txtId;
+    private javax.swing.JTextField txtMovieId;
     private javax.swing.JTextField txtTitle;
     private javax.swing.JTextField txtTitleEdit;
     private javax.swing.JTextField txtYear;
